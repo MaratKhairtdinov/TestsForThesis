@@ -22,29 +22,20 @@ public class IFCLoaderEditor : Editor
         {
             loader.ConvertIFC();
         }
-        /*
-        if (GUILayout.Button("Load *.OBJ"))
-        {
-            loader.LoadObj();
-        }
 
-        if (GUILayout.Button("Load *.XML"))
-        {
-            loader.LoadXML();
-        }
-        */
         if (GUILayout.Button("Filter nodes"))
         {
             loader.Filter();
         }
 
-
         SerializedProperty FilteredRoot = serializedObject.FindProperty("FilteredRoot");
         SerializedProperty list = serializedObject.FindProperty("names");
+        SerializedProperty hiddenObjects = serializedObject.FindProperty("hiddenObjects");
         
         EditorGUILayout.PropertyField(list, new GUIContent("Names filter: "), true);
         EditorGUILayout.PropertyField(FilteredRoot, new GUIContent("Filtered Root: "), true);
-        
+        EditorGUILayout.PropertyField(hiddenObjects, new GUIContent("Hidden Objects: "), true);
+
         serializedObject.ApplyModifiedProperties();
     }
 }

@@ -11,6 +11,7 @@ public class MeshOperator : MonoBehaviour
 
     public GameObject target;
     public long vertices_visualize = 5000000000;
+    public float minimum_edge_length;
 
     int vertices_count = 0;
 
@@ -47,6 +48,7 @@ public class MeshOperator : MonoBehaviour
     public void Upsample()
     {
         Init();
+        Upsampler.threshold = minimum_edge_length;
         foreach (GameObject target in targets)
         {
             if (target.GetComponent<MeshFilter>() && target.activeInHierarchy)
@@ -82,8 +84,8 @@ public class MeshOperator : MonoBehaviour
                             lr.startWidth = 0.1f; lr.endWidth = 0.1f;
                             dot.transform.parent = target.transform;
                             dot.transform.localPosition = vertex;
-                            lr.SetPosition(0, target.transform.position + target.transform.localToWorldMatrix.MultiplyVector(vertex));
-                            lr.SetPosition(1, target.transform.position + target.transform.localToWorldMatrix.MultiplyVector(vertex) + Vector3.up * .1f);
+                            lr.SetPosition(0, target.transform.TransformPoint(vertex));
+                            lr.SetPosition(1, target.transform.TransformPoint(vertex) + Vector3.up * .1f);
                             dots.Add(dot);
                         }                        
                     }
@@ -113,6 +115,7 @@ public class MeshOperator : MonoBehaviour
     public void RecalculateNormals()
     {
         Init();
+        
         if (!normalsshown && targets.Count > 0)
         {
             if (this.vertices_count < vertices_visualize)
@@ -133,8 +136,8 @@ public class MeshOperator : MonoBehaviour
                             lr.startWidth = 0.03f; lr.endWidth = 0.03f;
                             normal.transform.parent = target.transform;
                             normal.transform.localPosition = mesh.vertices[i];
-                            lr.SetPosition(0, target.transform.position + target.transform.localToWorldMatrix.MultiplyVector(mesh.vertices[i]));
-                            lr.SetPosition(1, target.transform.position + target.transform.localToWorldMatrix.MultiplyVector(mesh.vertices[i]+mesh.normals[i]));
+                            lr.SetPosition(0, target.transform.TransformPoint(mesh.vertices[i]));
+                            lr.SetPosition(1, target.transform.TransformPoint(mesh.vertices[i]) + target.transform.TransformDirection(mesh.normals[i]));
                             normals.Add(normal);
                         }
                     }

@@ -49,6 +49,7 @@ public class VertexCollector : MonoBehaviour
     public void Collect()
     {
         vertices.Clear();
+        normals.Clear();
         Traverce(parentNode);
         Debug.Log(vertices.Count);
     }
@@ -61,11 +62,11 @@ public class VertexCollector : MonoBehaviour
             Mesh mesh = root.GetComponent<MeshFilter>().sharedMesh;            
             foreach(Vector3 vertex in mesh.vertices)
             {
-                vertices.Add(wrldMat.MultiplyVector(vertex));                
+                vertices.Add(root.TransformPoint(vertex));                
             }
             foreach(Vector3 normal in mesh.normals)
             {
-                normals.Add(normal);
+                normals.Add(root.TransformDirection(normal).normalized);
             }
         }
         if (root.transform.childCount == 0) 

@@ -25,14 +25,11 @@ public class IfcLoader : MonoBehaviour {
     [SerializeField]
     public string[] names;
 
-    List<GameObject> hiddenObjects;
+    public List<GameObject> hiddenObjects = new List<GameObject>(); 
 
     private void OnValidate()
     {
-        if (hiddenObjects == null)
-        {
-            hiddenObjects = new List<GameObject>();
-        }
+        //if (hiddenObjects==null) { hiddenObjects }
         meshOperator = GetComponent<MeshOperator>();
     }
 
@@ -47,17 +44,41 @@ public class IfcLoader : MonoBehaviour {
         
         if (!File.Exists(fileToParse + ".obj"))
         {
+            System.Diagnostics.Process readIFC = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = exeToRun,
+                    Arguments = fileToParse + ".ifc " + fileToParse +".obj --use-element-guids",
+                    UseShellExecute = true,
+                    RedirectStandardOutput = false,
+                    CreateNoWindow = false
+                }
+            };
+            System.Diagnostics.Process readXML = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = exeToRun,
+                    Arguments = fileToParse + ".ifc " + fileToParse + ".xml --use-element-guids",
+                    UseShellExecute = true,
+                    RedirectStandardOutput = false,
+                    CreateNoWindow = false
+                }
+            };
+            readIFC.Start();
+            readIFC.WaitForExit();
+            
+            readXML.Start();
+            readXML.WaitForExit();
+            /*
             System.Diagnostics.Process ifcRead = System.Diagnostics.Process.Start(exeToRun, " " + fileToParse + ".ifc " + fileToParse + ".obj --use-element-guids");
             ifcRead.WaitForExit();
-        }
-        if (!File.Exists(fileToParse + ".xml"))
-        {
-            System.Diagnostics.Process xmlLoad = System.Diagnostics.Process.Start(exeToRun, " " + fileToParse + ".ifc " + fileToParse + ".xml --use-element-guids");
-            xmlLoad.WaitForExit();
-        }
+            */
+        }        
         LoadObj();
         LoadXML();
-        Filter();
+        //Filter();
     }
 
     public void LoadObj()
@@ -83,7 +104,7 @@ public class IfcLoader : MonoBehaviour {
         loadedXML.Load(fileToParse);
         string basePath = @"//ifc/decomposition";
         root = new GameObject();
-        root.name = fileName + " (IFC)";
+        root.name = fileName+" (IFC)";
 
         vertexCollector.parentNode = root.transform;
         meshOperator.target = root;
@@ -235,6 +256,7 @@ public class IfcLoader : MonoBehaviour {
     {
         if (!filtered)
         {
+            hiddenObjects = new List<GameObject>();
             filtered = true;
             FilterNodes(FilteredRoot.transform);
         }
@@ -259,13 +281,13 @@ public class IfcLoader : MonoBehaviour {
             { 
                 match = true; 
                 break; 
-            };
+            }
         }
 
         if (!match && node.gameObject!=FilteredRoot) 
         {
             hiddenObjects.Add(node.gameObject);
-            node.gameObject.SetActive(false); 
+            node.gameObject.SetActive(false);
             //DestroyImmediate(node.gameObject);
         }
 

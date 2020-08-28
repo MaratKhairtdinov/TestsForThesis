@@ -63,12 +63,12 @@ public static class Upsampler
         return newIndex;
     }
 
-
-    public static bool CheckTriangle(int[] triangle, float threshold)
+    public static float threshold;
+    public static bool CheckTriangle(int[] triangle)
     {
         Vector3 first_side  = vertices[triangle[1]] - vertices[triangle[0]];
         Vector3 second_side = vertices[triangle[2]] - vertices[triangle[0]];
-        bool long_enough = ((first_side-second_side).magnitude >= .5f) && (first_side.magnitude >= .5f) && (second_side.magnitude >= .5f);
+        bool long_enough = ((first_side-second_side).magnitude >= threshold) && (first_side.magnitude >= threshold) && (second_side.magnitude >= threshold);
         //Debug.Log("a: "+first_side.magnitude+"\tb: "+second_side.magnitude+"\tc: "+ (first_side - second_side).magnitude) ;
         return long_enough;// (Vector3.Cross(first_side, second_side).magnitude / 2 >= threshold) && long_enough;
     }
@@ -90,7 +90,7 @@ public static class Upsampler
             int i2 = triangles[i + 1];
             int i3 = triangles[i + 2];
 
-            if (CheckTriangle(new int[3] { i1, i2, i3}, 0.01f))
+            if (CheckTriangle(new int[3] { i1, i2, i3}))
             {
                 int a = GetNewVertex4(i1, i2);
                 int b = GetNewVertex4(i2, i3);

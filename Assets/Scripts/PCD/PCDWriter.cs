@@ -9,9 +9,12 @@ using UnityEngine;
 public class PCDWriter : MonoBehaviour
 {
     public string outputFileLocation;
+    public string fileName;
     public VertexCollector collector;
     string[] lines;
     public string header;
+    public bool inner_surface = false;
+
     public void ConvertFile()
     {
         header = "# .PCD v.7 - Point Cloud Data file format" + Environment.NewLine +
@@ -23,6 +26,13 @@ public class PCDWriter : MonoBehaviour
 
         List<Vector3> vertices = collector.GetVertices();
         List<Vector3> normals = collector.GetNormals();
+        if (inner_surface)
+        {
+            for(int i = 0; i<normals.Count;i++)
+            {
+                normals[i] *= (-1.0f);
+            }
+        }
         int points = vertices.Count;
         header += ("WIDTH "+ points + Environment.NewLine);
         header += ("HEIGHT 1" + Environment.NewLine);
@@ -32,13 +42,11 @@ public class PCDWriter : MonoBehaviour
         
         for (int i = 0; i< vertices.Count; i++)
         {
-            header += (Environment.NewLine + vertices[i].x.ToString() + " " + vertices[i].y.ToString() + " " + vertices[i].z.ToString() + 
-                " " + normals[i].x.ToString() + " " + (normals[i].z).ToString() + " " + (-normals[i].y).ToString());
+            header += (Environment.NewLine + (vertices[i].x).ToString() + " " + vertices[i].z.ToString() + " " + vertices[i].y.ToString() + 
+                " " + (normals[i]).x.ToString() + " " + (normals[i].z).ToString() + " " + (normals[i].y).ToString());
         }
-
-        //lines = Regex.Split(header, Environment.NewLine);
-
-        //File.WriteAllLines(outputFileLocation, lines);
+        lines = Regex.Split(header, Environment.NewLine);
+        File.WriteAllLines(Application.dataPath + "\\Models\\PCDModels\\"+fileName+".pcd", lines);
     }
 
 }

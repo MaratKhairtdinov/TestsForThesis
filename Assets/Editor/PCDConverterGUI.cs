@@ -11,8 +11,11 @@ public class PCDConverterGUI : Editor
     {
         converter = (PCDWriter)target;
 
-        converter.outputFileLocation = EditorGUILayout.TextField("Output file path: ", converter.outputFileLocation);
+        //converter.outputFileLocation = EditorGUILayout.TextField("Output file path: ", converter.outputFileLocation);
+
+        converter.fileName = EditorGUILayout.TextField("File name: ", converter.fileName);
         EditorGUILayout.Space();
+        converter.inner_surface = EditorGUILayout.Toggle("Inner surface", converter.inner_surface);
         SerializedProperty collector = serializedObject.FindProperty("collector");
         EditorGUILayout.PropertyField(collector, new GUIContent("Vertex collector"), true);
         serializedObject.ApplyModifiedProperties();
